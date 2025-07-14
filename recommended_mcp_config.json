@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "Figma MCP PRO": {
+      "command": "npx",
+      "args": [
+        "figma-mcp-pro@latest",
+        "--figma-api-key",
+        "figd_6UkfAi-n5Q-K80boIY0i9gEMed0wWYgzg2H1OQxU",
+        "--timeout",
+        "30000",
+        "--cache-duration",
+        "300",
+        "--max-retries",
+        "3"
+      ],
+      "env": {
+        "DEBUG": "true",
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

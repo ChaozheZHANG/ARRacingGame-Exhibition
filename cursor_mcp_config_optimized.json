@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "Figma MCP PRO": {
+      "command": "npx",
+      "args": [
+        "figma-mcp-pro@latest",
+        "--figma-api-key",
+        "figd_6UkfAi-n5Q-K80boIY0i9gEMed0wWYgzg2H1OQxU",
+        "--debug"
+      ],
+      "env": {
+        "DEBUG": "true",
+        "NODE_ENV": "production"
+      }
+    }
+  }
+} 

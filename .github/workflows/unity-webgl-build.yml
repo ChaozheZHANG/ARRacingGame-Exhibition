@@ -1,0 +1,241 @@
+name: Unity WebGL Build for Exhibition
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Unity WebGL
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # 缓存Unity Library
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Unity构建
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+          unityVersion: 2021.2.15f1
+          buildName: ScriptEcho-AR-Racing
+          buildsPath: build
+
+      # 优化WebGL构建
+      - name: Optimize WebGL Build
+        run: |
+          echo "Optimizing WebGL build for exhibition use..."
+          # 压缩构建文件
+          cd build/WebGL/ScriptEcho-AR-Racing
+          
+          # 创建展览专用index.html
+          cat > index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+              <meta charset="utf-8">
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+              <title>ScriptEcho AR赛车 - 展览体验版</title>
+              <style>
+                  body { 
+                      margin: 0; 
+                      padding: 0; 
+                      background: #000;
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                      display: flex;
+                      flex-direction: column;
+                      height: 100vh;
+                      overflow: hidden;
+                  }
+                  
+                  .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      padding: 10px 20px;
+                      text-align: center;
+                      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                  }
+                  
+                  .header h1 {
+                      margin: 0;
+                      font-size: 24px;
+                      font-weight: 300;
+                  }
+                  
+                  .subtitle {
+                      margin: 5px 0 0 0;
+                      font-size: 14px;
+                      opacity: 0.9;
+                  }
+                  
+                  #unity-container { 
+                      flex: 1;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      background: #1a1a1a;
+                  }
+                  
+                  #unity-canvas { 
+                      background: #232323;
+                      border-radius: 8px;
+                      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                      max-width: 100%;
+                      max-height: 100%;
+                  }
+                  
+                  .loading {
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      color: white;
+                      text-align: center;
+                      z-index: 1000;
+                  }
+                  
+                  .loading-bar {
+                      width: 200px;
+                      height: 4px;
+                      background: rgba(255,255,255,0.2);
+                      border-radius: 2px;
+                      overflow: hidden;
+                      margin: 10px auto;
+                  }
+                  
+                  .loading-fill {
+                      height: 100%;
+                      background: linear-gradient(90deg, #667eea, #764ba2);
+                      width: 0%;
+                      transition: width 0.3s ease;
+                  }
+                  
+                  .instructions {
+                      position: absolute;
+                      bottom: 20px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                      color: white;
+                      text-align: center;
+                      padding: 15px 25px;
+                      background: rgba(0,0,0,0.7);
+                      border-radius: 25px;
+                      border: 1px solid rgba(255,255,255,0.2);
+                      backdrop-filter: blur(10px);
+                      font-size: 14px;
+                      max-width: 90%;
+                      box-sizing: border-box;
+                  }
+                  
+                  @media (max-width: 768px) {
+                      .header h1 { font-size: 20px; }
+                      .subtitle { font-size: 12px; }
+                      .instructions { 
+                          font-size: 12px; 
+                          padding: 10px 20px;
+                          bottom: 10px;
+                      }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🏎️ ScriptEcho AR赛车</h1>
+                  <div class="subtitle">沉浸式AR赛车体验 | 展览专用版</div>
+              </div>
+              
+              <div id="unity-container">
+                  <canvas id="unity-canvas"></canvas>
+                  <div class="loading" id="loading">
+                      <div>🚀 正在加载AR赛车游戏...</div>
+                      <div class="loading-bar">
+                          <div class="loading-fill" id="progress-bar"></div>
+                      </div>
+                      <div id="progress-text">0%</div>
+                  </div>
+              </div>
+              
+              <div class="instructions">
+                  📱 允许相机权限 → 🎯 点击屏幕放置赛车 → 🏁 触摸控制驾驶
+              </div>
+
+              <script src="Build/UnityLoader.js"></script>
+              <script>
+                  var gameInstance = UnityLoader.instantiate("unity-canvas", "Build/ScriptEcho-AR-Racing.json", {
+                      onProgress: function (gameInstance, progress) {
+                          document.getElementById("progress-bar").style.width = (progress * 100) + "%";
+                          document.getElementById("progress-text").textContent = Math.round(progress * 100) + "%";
+                          
+                          if (progress === 1) {
+                              setTimeout(() => {
+                                  document.getElementById("loading").style.display = "none";
+                              }, 500);
+                          }
+                      }
+                  });
+              </script>
+          </body>
+          </html>
+          EOF
+
+      # 部署到GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/WebGL/ScriptEcho-AR-Racing
+          cname: your-domain.com  # 可选：自定义域名
+
+      # 创建Release
+      - name: Create Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: exhibition-v${{ github.run_number }}
+          release_name: 展览版本 v${{ github.run_number }}
+          body: |
+            🎪 展览专用AR赛车游戏
+            
+            📱 **体验地址**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+            
+            ✨ **新功能**:
+            - 🏎️ AR赛车体验优化
+            - 📱 移动端触摸控制
+            - 🎯 展览现场即扫即玩
+            - 🔄 陀螺仪转向支持
+            
+            🚀 **使用方法**:
+            1. 手机浏览器打开上方链接
+            2. 允许相机权限
+            3. 移动设备寻找平面
+            4. 点击屏幕放置赛车
+            5. 开始AR赛车体验！
+          draft: false
+          prerelease: false 
