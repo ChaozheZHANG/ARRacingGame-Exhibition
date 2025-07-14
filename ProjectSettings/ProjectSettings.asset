@@ -894,11 +894,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 2
-  cloudProjectId: 
+  cloudProjectId: 61a0d9ab-8902-4775-a712-c60dd10a97bf
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: ARRacingGame-master
+  organizationId: zhe18611922329
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 
