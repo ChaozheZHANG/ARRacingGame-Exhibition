@@ -10,6 +10,20 @@ This AR Racing Game serves as a technology demonstration of ScriptEcho's AR capa
 
 An advanced AR racing game originally built with AR Foundation and now featuring multiple platform support including Unity ARDK, AR Foundation, and a web-based AR.js version for maximum accessibility across devices and exhibitions.
 
+### 🌟 Exhibition Showcase
+
+**ScriptEcho AR Racing** successfully demonstrated at technology exhibitions, showcasing real AR capabilities with environmental plane detection and immersive gameplay:
+
+| Exhibition Experience | Interactive Gameplay | Technology Demo |
+|---|---|---|
+| ![Exhibition Demo 1](docs/images/28001752798188_.pic.jpg) | ![Exhibition Demo 2](docs/images/28021752798205_.pic.jpg) | ![Exhibition Demo 3](docs/images/29861752668028_.pic.jpg) |
+
+| Professional Setup | Live Demonstration |
+|---|---|
+| ![Exhibition Demo 4](docs/images/29891752668037_.pic.jpg) | ![Exhibition Demo 5](docs/images/29941752668053_.pic.jpg) |
+
+*Visitors experiencing true AR functionality with real-world plane detection and virtual content anchoring*
+
 ### 🌟 Exhibition Features
 
 This project includes a special **Exhibition Web Version** (`ar-racing-arjs-iphone.html`) designed for trade shows and public demonstrations:
@@ -18,18 +32,6 @@ This project includes a special **Exhibition Web Version** (`ar-racing-arjs-ipho
 - **Cross-Platform Compatibility**: Works on iOS, Android, and web browsers without app installation
 - **Interactive AR Experience**: Players control vehicles in true AR space with realistic perspective changes
 - **Professional Exhibition UI**: Optimized for public demonstrations with clear instructions and engaging visuals
-
-![Exhibition Demo 1](docs/images/exhibition_demo_1.jpg)
-*Visitors experiencing the AR Racing Game at technology exhibition*
-
-![Exhibition Demo 2](docs/images/exhibition_demo_2.jpg)
-*Interactive AR gameplay with real-world plane detection and virtual vehicle placement*
-
-### 🎯 Technology Demonstrations
-
-|Unity AR Foundation|Lightship ARDK|Web AR.js Version|
-|---|---|---|
-|<img src="docs/images/demo_1.gif" width="250">|<img src="docs/images/demo_2.gif" width="250">|<img src="docs/images/demo_3.gif" width="250">|
 
 ### 📱 Platform Support
 
@@ -111,6 +113,7 @@ This project includes several deployment scripts for easy exhibition setup:
 - ✅ **No Installation Required**: Web version works instantly
 - ✅ **Scalable Architecture**: Easy to customize and extend
 - ✅ **Performance Optimized**: Smooth 60fps AR rendering
+- ✅ **Live Demonstration**: Successfully showcased at technology exhibitions
 
 ### 📞 About the Technology
 
