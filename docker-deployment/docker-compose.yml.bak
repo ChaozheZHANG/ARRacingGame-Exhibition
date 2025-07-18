@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  ar-racing-exhibition:
+    build:
+      context: ..
+      dockerfile: docker-deployment/Dockerfile
+    container_name: scriptecho-ar-racing
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs:/var/log/nginx
+    environment:
+      - EXHIBITION_MODE=true
+      - AUTO_RESET_TIME=300
+      - MAX_USERS=50
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ar-racing.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.ar-racing.tls=true"
+      - "traefik.http.routers.ar-racing.tls.certresolver=letsencrypt"
+    networks:
+      - exhibition-network
+
+  # 可选：分析统计服务
+  analytics:
+    image: plausible/analytics:latest
+    container_name: ar-racing-analytics
+    environment:
+      - ADMIN_USER_EMAIL=admin@your-domain.com
+      - ADMIN_USER_NAME=Admin
+      - ADMIN_USER_PWD=changeme123
+      - BASE_URL=https://analytics.your-domain.com
+      - SECRET_KEY_BASE=generate-a-secret-key
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - clickhouse
+    networks:
+      - exhibition-network
+
+  postgres:
+    image: postgres:13
+    container_name: ar-racing-db
+    environment:
+      - POSTGRES_DB=plausible
+      - POSTGRES_USER=plausible
+      - POSTGRES_PASSWORD=changeme
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - exhibition-network
+
+  clickhouse:
+    image: yandex/clickhouse-server:21.3
+    container_name: ar-racing-clickhouse
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    networks:
+      - exhibition-network
+
+volumes:
+  postgres-data:
+  clickhouse-data:
+
+networks:
+  exhibition-network:
+    driver: bridge 
